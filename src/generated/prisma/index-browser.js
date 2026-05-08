@@ -120,18 +120,26 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.AdminScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  password: 'password'
+};
+
 exports.Prisma.EventScalarFieldEnum = {
   id: 'id',
   title: 'title',
   description: 'description',
   startDate: 'startDate',
   endDate: 'endDate',
-  location: 'location'
+  place: 'place'
 };
 
 exports.Prisma.RoomScalarFieldEnum = {
   id: 'id',
-  name: 'name'
+  name: 'name',
+  capacity: 'capacity'
 };
 
 exports.Prisma.SessionScalarFieldEnum = {
@@ -140,20 +148,28 @@ exports.Prisma.SessionScalarFieldEnum = {
   description: 'description',
   startTime: 'startTime',
   endTime: 'endTime',
-  capacity: 'capacity',
   eventId: 'eventId',
   roomId: 'roomId'
 };
 
 exports.Prisma.SpeakerScalarFieldEnum = {
   id: 'id',
-  fullName: 'fullName',
+  firstName: 'firstName',
+  lastName: 'lastName',
   photo: 'photo',
-  bio: 'bio',
-  twitter: 'twitter',
-  linkedin: 'linkedin',
-  github: 'github',
-  website: 'website'
+  biography: 'biography'
+};
+
+exports.Prisma.SessionSpeakerScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  speakerId: 'speakerId'
+};
+
+exports.Prisma.SpeakerLinkScalarFieldEnum = {
+  id: 'id',
+  url: 'url',
+  speakerId: 'speakerId'
 };
 
 exports.Prisma.QuestionScalarFieldEnum = {
@@ -161,7 +177,14 @@ exports.Prisma.QuestionScalarFieldEnum = {
   content: 'content',
   authorName: 'authorName',
   upvotes: 'upvotes',
-  sessionId: 'sessionId',
+  createdAt: 'createdAt',
+  sessionId: 'sessionId'
+};
+
+exports.Prisma.QuestionVoteScalarFieldEnum = {
+  id: 'id',
+  questionId: 'questionId',
+  visitorId: 'visitorId',
   createdAt: 'createdAt'
 };
 
@@ -182,11 +205,15 @@ exports.Prisma.NullsOrder = {
 
 
 exports.Prisma.ModelName = {
+  Admin: 'Admin',
   Event: 'Event',
   Room: 'Room',
   Session: 'Session',
   Speaker: 'Speaker',
-  Question: 'Question'
+  SessionSpeaker: 'SessionSpeaker',
+  SpeakerLink: 'SpeakerLink',
+  Question: 'Question',
+  QuestionVote: 'QuestionVote'
 };
 
 /**
