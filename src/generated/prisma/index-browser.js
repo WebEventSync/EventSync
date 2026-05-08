@@ -188,6 +188,13 @@ exports.Prisma.QuestionVoteScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.FavoriteScalarFieldEnum = {
+  id: 'id',
+  visitorId: 'visitorId',
+  sessionId: 'sessionId',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -213,7 +220,8 @@ exports.Prisma.ModelName = {
   SessionSpeaker: 'SessionSpeaker',
   SpeakerLink: 'SpeakerLink',
   Question: 'Question',
-  QuestionVote: 'QuestionVote'
+  QuestionVote: 'QuestionVote',
+  Favorite: 'Favorite'
 };
 
 /**
