@@ -24,11 +24,13 @@ model Event {
   id          String   @id @default(uuid())
   title       String
   description String
-  startDate   DateTime
-  endDate     DateTime
+  startDate   DateTime @map("start_date")
+  endDate     DateTime @map("end_date")
   place       String
 
   sessions    Session[]
+
+  @@map("event")
 }
 
 model Room {
