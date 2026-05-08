@@ -30,9 +30,17 @@ export interface SessionFilters {
   roomId?: string;
 }
 
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  error?: string;
+export type AppErrorCode =
+  | 'SESSION_NOT_FOUND'
+  | 'ROOM_NOT_FOUND'
+  | 'EVENT_NOT_FOUND'
+  | 'SPEAKER_NOT_FOUND'
+  | 'ROOM_HAS_SESSIONS'
+  | 'SESSION_NEEDS_ONE_SPEAKER';
+
+export class AppError extends Error {
+  constructor(public code: AppErrorCode) {
+    super(code);
+    this.name = 'AppError';
+  }
 }
