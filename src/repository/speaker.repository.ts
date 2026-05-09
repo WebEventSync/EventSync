@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
-import type { Prisma } from "@/generated/prisma";
+import {Prisma} from "@/generated/prisma";
+import SpeakerCreateInput = Prisma.SpeakerCreateInput;
+import SpeakerUpdateInput = Prisma.SpeakerUpdateInput;
 
 export class SpeakerRepository {
 
@@ -27,6 +29,25 @@ export class SpeakerRepository {
                 speakers: true,
             },
             orderBy: { startTime: "asc" },
+        });
+    }
+
+    async create_speaker(data: SpeakerCreateInput) {
+        return prisma.speaker.create({
+            data
+        });
+    }
+
+    async put_speaker(data: SpeakerUpdateInput, id: string) {
+        return prisma.speaker.update({
+            where: { id },
+            data,
+        });
+    }
+
+    async delete_speaker(id: string) {
+        return prisma.speaker.delete({
+            where: { id },
         });
     }
 }
