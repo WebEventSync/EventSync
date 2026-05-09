@@ -4,9 +4,9 @@ import { NextResponse } from "next/server";
 
 const event_service = new EventService(new EventRepository)
 
-export async function GET({params} : {params : { id: string}}){
+export async function GET(req : Request,{params} : {params : { id: string}}){
+    const {id} = await params
     try{
-        const {id} = params
         const result = event_service.get_event_schedule(id)
         return NextResponse.json(result, {status:200})
     }catch(error){

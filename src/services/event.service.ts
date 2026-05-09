@@ -1,11 +1,13 @@
 import { Prisma } from "../generated/prisma"
 import { EventRepository } from "@/repository/event.repository";
-import { run } from "node:test";
 
 export class EventService{
     constructor( private event_repositrory : EventRepository){}
 
     async create_event(event : Prisma.EventCreateInput){
+        if (event.startDate > event.endDate) {
+            throw new Error("Start Day may be before End Day")
+        }
         return this.event_repositrory.create_event(event)
     }
     /***********************************************************************************************/
