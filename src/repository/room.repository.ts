@@ -26,7 +26,7 @@ export class RoomRepository {
           : {}),
       },
       include: {
-        speakers: { select: { id: true, fullName: true } },
+        speakers: { select: { id: true, speaker: { select: { firstName: true, lastName: true } } } },
       },
       orderBy: { startTime: "asc" },
     });
