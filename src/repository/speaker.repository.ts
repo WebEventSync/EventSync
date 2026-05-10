@@ -7,7 +7,7 @@ export class SpeakerRepository {
 
     async find_all_speakers() {
         return prisma.speaker.findMany({
-            orderBy: { fullName: "asc" },
+            orderBy: { firstName: "asc" },
         });
     }
 
@@ -31,10 +31,15 @@ export class SpeakerRepository {
             orderBy: { startTime: "asc" },
         });
     }
-
-    async create_speaker(data: SpeakerCreateInput) {
+    async create_speaker(data: { firstName: string; lastName: string; photo?: string | null; biography?: string | null; links?: string[];
+    }) {
         return prisma.speaker.create({
-            data
+            data: {firstName: data.firstName, lastName: data.lastName, photo: data.photo ?? null, biography: data.biography ?? null,
+                links: data.links?.length
+                    ? { create: data.links.map((url) => ({ url })) }
+                    : undefined,
+            },
+            include: { links: true },
         });
     }
 
@@ -46,6 +51,10 @@ export class SpeakerRepository {
     }
 
     async delete_speaker(id: string) {
+        await prisma.speakerLink.deleteMany({
+            where: { speakerId: id },
+        });
+
         return prisma.speaker.delete({
             where: { id },
         });

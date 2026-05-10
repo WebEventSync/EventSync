@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { verifyToken } from "./lib/utils/jwt";
+import { jwtVerify } from "jose";
 
 export async function middleware(request: NextRequest) {
   const authHeader = request.headers.get("Authorization");
@@ -12,10 +12,14 @@ export async function middleware(request: NextRequest) {
   const token = authHeader.substring(7);
 
   try {
-    await verifyToken(token);
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    await jwtVerify(token, secret);
     return NextResponse.next();
   } catch {
-    return NextResponse.json({ error: "Token invalide ou expiré" }, { status: 401 });
+    return NextResponse.json(
+        { error: "Token invalide ou expiré" },
+        { status: 401 }
+    );
   }
 }
 

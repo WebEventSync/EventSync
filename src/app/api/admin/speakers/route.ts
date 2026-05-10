@@ -7,23 +7,27 @@ const speaker_service = new SpeakerService(new SpeakerRepository());
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { fullName, photo, bio, twitter, linkedin, github, website } = body;
+        const { firstName, lastName, biography, links } = body;
 
-        if (!fullName || typeof fullName !== "string" || fullName.trim() === "") {
+        if (!firstName || typeof firstName !== "string" || firstName.trim() === "") {
             return NextResponse.json(
-                { error: "Le champ 'fullName' est obligatoire" },
+                { error: "Le champ 'firstName' est obligatoire" },
+                { status: 400 }
+            );
+        }
+
+        if (!lastName || typeof lastName !== "string" || lastName.trim() === "") {
+            return NextResponse.json(
+                { error: "Le champ 'lastName' est obligatoire" },
                 { status: 400 }
             );
         }
 
         const speaker = await speaker_service.create_speaker({
-            fullName: fullName.trim(),
-            photo: photo ?? null,
-            bio: bio ?? null,
-            twitter: twitter ?? null,
-            linkedin: linkedin ?? null,
-            github: github ?? null,
-            website: website ?? null,
+            firstName: firstName.trim(),
+            lastName: lastName.trim(),
+            biography: biography ?? null,
+            links: links ?? [],
         });
 
         return NextResponse.json(speaker, { status: 201 });
