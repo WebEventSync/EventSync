@@ -19,13 +19,11 @@ export class SpeakerService {
     }
 
     async create_speaker(data: {
-        fullName: any;
-        photo: any;
-        bio: any;
-        twitter: any;
-        linkedin: any;
-        github: any;
-        website: any
+        firstName: string;
+        lastName: string;
+        photo?: string | null;
+        biography?: string | null;
+        links?: string[];
     }) {
         return this.speaker_repository.create_speaker(data);
     }
