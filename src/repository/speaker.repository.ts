@@ -51,6 +51,10 @@ export class SpeakerRepository {
     }
 
     async delete_speaker(id: string) {
+        await prisma.speakerLink.deleteMany({
+            where: { speakerId: id },
+        });
+
         return prisma.speaker.delete({
             where: { id },
         });
