@@ -31,19 +31,10 @@ export class SpeakerRepository {
             orderBy: { startTime: "asc" },
         });
     }
-    async create_speaker(data: {
-        firstName: string;
-        lastName: string;
-        photo?: string | null;
-        biography?: string | null;
-        links?: string[];
+    async create_speaker(data: { firstName: string; lastName: string; photo?: string | null; biography?: string | null; links?: string[];
     }) {
         return prisma.speaker.create({
-            data: {
-                firstName: data.firstName,
-                lastName: data.lastName,
-                photo: data.photo ?? null,
-                biography: data.biography ?? null,
+            data: {firstName: data.firstName, lastName: data.lastName, photo: data.photo ?? null, biography: data.biography ?? null,
                 links: data.links?.length
                     ? { create: data.links.map((url) => ({ url })) }
                     : undefined,
