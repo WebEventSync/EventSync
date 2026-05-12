@@ -5,10 +5,16 @@ export class EventService{
     constructor( private event_repositrory : EventRepository){}
 
     async create_event(event : Prisma.EventCreateInput){
-        if (event.startDate > event.endDate) {
+        const start = new Date(event.startDate as string)
+        const end = new Date(event.endDate as string)
+        if (start> end) {
             throw new Error("Start Day may be before End Day")
         }
-        return this.event_repositrory.create_event(event)
+        return this.event_repositrory.create_event({
+            ...event,
+            startDate : start,
+            endDate : end
+        })
     }
     /***********************************************************************************************/
     async put_event(event : Prisma.EventUpdateInput, id : string){
