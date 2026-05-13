@@ -49,6 +49,33 @@
   z-index: 1;
 }
 
+.footerArrow {
+  position: absolute;
+  bottom: 1rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: rgba(3, 102, 214, 0.3);
+  border-radius: 50%;
+  color: #0ea5e9;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(3, 102, 214, 0.5);
+  z-index: 2;
+}
+
+.footerArrow:hover {
+  background: rgba(3, 102, 214, 0.5);
+  transform: translateX(4px);
+}
+
+.arrowIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
 .body {
   position: relative;
   z-index: 1;

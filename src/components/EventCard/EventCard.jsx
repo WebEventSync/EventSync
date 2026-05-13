@@ -1,10 +1,11 @@
+import Link from 'next/link'
 import styles from './EventCard.module.css'
 
 function formatDateRange(startDate, endDate) {
   if (!startDate || !endDate) return 'Date inconnue'
   const start = new Date(startDate)
   const end = new Date(endDate)
-  const options = { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }
+  const options = { weekday: 'short', day: '2-digit', month: 'short'}
   const startText = start.toLocaleDateString('fr-FR', options)
   const endText = end.toLocaleDateString('fr-FR', options)
   return `${startText} — ${endText}`
@@ -22,7 +23,13 @@ const LocationIcon = () => (
   </svg>
 )
 
-export default function EventCard({ title, description, place, startDate, endDate, image = undefined }) {
+const ArrowIcon = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" className={styles.arrowIcon}>
+    <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+
+export default function EventCard({ id, title, description, place, startDate, endDate, image = undefined }) {
   const style = image ? { backgroundImage: `url(${image})` } : undefined
 
   return (
@@ -45,6 +52,14 @@ export default function EventCard({ title, description, place, startDate, endDat
         <LocationIcon />
         <span>{place || 'Lieu à confirmer'}</span>
       </div>
+
+      <div>
+        <Link href={`/event/${id}`} className={styles.footerArrow}>
+          <ArrowIcon />
+        </Link>
+      </div>
+
+      
     </article>
   )
 }

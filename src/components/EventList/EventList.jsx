@@ -6,6 +6,7 @@ export default function EventList({ events }){
             {events.map((ev, index) => (
             <EventCard
                 key={index}
+                id={ev.id}
                 title={ev.title}
                 description={ev.description}
                 place={ev.place}

@@ -1,5 +1,6 @@
 
 import Link from 'next/link'
+import { log } from 'util'
 
 const get_event = async (event_id: string) => {
     const event = await fetch(`http://localhost:3000/api/events/${event_id}`)
@@ -9,6 +10,11 @@ const get_event = async (event_id: string) => {
 const get_sessions = async (event_id : string) => {
     const sessions = await fetch(`http://localhost:3000/api/events/${event_id}/schedule`)
     return sessions.json()
+}
+
+const get_speakers = async (session_id : string) => {
+    const speakers = await fetch(`http://localhost:3000/api/sessions/${session_id}`)
+    return speakers.json()
 }
 
 function formatDateRange(startDate: string | Date, endDate: string | Date) {
@@ -25,6 +31,14 @@ export default async function Event({ params }: { params: { id: string } }){
     const {id} = await params
     const event = await get_event(id)
     const {sessions} = await get_sessions(id)
+
+    // Fetch all speakers for all sessions
+    const sessionsWithSpeakers = await Promise.all(
+        (sessions || []).map(async (session: any) => ({
+            ...session,
+            speakers: await get_speakers(session.id)
+        }))
+    )
 
     const style = event.image ? { backgroundImage: `url(${event.image})` } : undefined
 
@@ -89,14 +103,14 @@ export default async function Event({ params }: { params: { id: string } }){
                 {/* Sessions list */}
                 <div>
                     <h2 className="text-2xl font-semibold text-white mb-6">Sessions</h2>
-                    {sessions && sessions.length > 0 ? (
+                    {sessionsWithSpeakers && sessionsWithSpeakers.length > 0 ? (
                         <div className="space-y-4">
-                            {sessions.map((session: any) => (
+                            {sessionsWithSpeakers.map((session: any) => (
                                 <div
                                     key={session.id}
                                     className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 hover:bg-slate-800/70 transition-colors duration-200"
                                 >
-                                    <div className="flex justify-between items-start mb-3">
+                                    <div className="flex justify-between items-start mb-4">
                                         <h3 className="text-xl font-semibold text-white">{session.title}</h3>
                                         <div className="text-sm text-slate-400">
                                             {new Date(session.startTime).toLocaleTimeString('fr-FR', {
@@ -108,15 +122,40 @@ export default async function Event({ params }: { params: { id: string } }){
                                             })}
                                         </div>
                                     </div>
-                                    <p className="text-slate-300 mb-3">{session.description}</p>
-                                    <div className="flex items-center gap-4 text-sm text-slate-400">
-                                        <span>Salle: {session.roomId?.name || 'Non assignée'}</span>
-                                        {session.speakers && session.speakers.length > 0 && (
-                                            <span>
-                                                Speakers: {session.speakers.map((s: any) => `${s.speaker.firstName} ${s.speaker.lastName}`).join(', ')}
-                                            </span>
-                                        )}
+                                    <p className="text-slate-300 mb-4">{session.description}</p>
+                                    
+                                    <div className="mb-4 text-sm text-slate-400">
+                                        <span>Salle: {session.room?.name || 'Non assignée'}</span>
                                     </div>
+
+                                    {/* Speakers section */}
+                                    {session.speakers && session.speakers.length > 0 && (
+                                        <div className="mt-4 border-t border-slate-600 pt-4">
+                                            <h4 className="text-sm font-semibold text-sky-300 mb-3">Speakers</h4>
+                                            <div className="space-y-3">
+                                                {session.speakers.map((speakerData: any) => {
+                                                    const speaker = speakerData.speaker
+                                                    return (
+                                                        <div key={speaker.id} className="flex gap-3 p-3 bg-slate-700/30 rounded-lg">
+                                                            {speaker.photo && (
+                                                                <img 
+                                                                    src={speaker.photo} 
+                                                                    alt={`${speaker.firstName} ${speaker.lastName}`}
+                                                                    className="w-12 h-12 rounded-full object-cover shrink-0"
+                                                                />
+                                                            )}
+                                                            <div className="flex-1">
+                                                                <p className="font-semibold text-white">{speaker.firstName} {speaker.lastName}</p>
+                                                                {speaker.biography && (
+                                                                    <p className="text-xs text-slate-300 mt-1">{speaker.biography}</p>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
