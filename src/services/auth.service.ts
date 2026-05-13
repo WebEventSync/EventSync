@@ -57,7 +57,7 @@ export const authService = {
         }
 
         // Générer JWT
-        const token = signToken({
+        const token = await signToken({
             adminId: admin.id,
             email: admin.email
         });
