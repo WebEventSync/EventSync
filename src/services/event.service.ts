@@ -21,6 +21,8 @@ export class EventService{
         if(id == null){
             throw new Error(`no id provided`)
         }
+        event.startDate = `${event.startDate}:00Z`
+        event.endDate = `${event.endDate}:00Z`
         try{
             this.event_repositrory.get_event_by_id(id)
         }catch(error){
