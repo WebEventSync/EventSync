@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 const event_service = new EventService(new EventRepository)
 
 export async function PUT(request: Request, {params} : {params : { id: string}}) {
-    const {id} = params;
+    const {id} = await params;
     const event = await request.json();
     try{
         const result = await event_service.put_event(event, id)
@@ -17,7 +17,7 @@ export async function PUT(request: Request, {params} : {params : { id: string}})
 
 export async function DELETE({params} : {params : { id: string}}) {
     try{
-        const {id} = params;
+        const {id} = await params;
         const result = await event_service.delete_event(id)
         return NextResponse.json(result, {status: 201})
     }catch (error){
