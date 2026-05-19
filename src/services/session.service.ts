@@ -53,7 +53,7 @@ export class SessionService {
       description: dto.description||"",
       startTime: new Date(dto.startTime),
       endTime: new Date(dto.endTime),
-      room: { connect: { id: dto.roomId } },
+      room: { connect: { id: dto.roomId,capacity: dto.capacity, } },
       event: { connect: { id: eventId } },
       ...(dto.speakerIds?.length
         ? { speakers: { create: dto.speakerIds.map((speakerId) => ({ speakerId })) } }
