@@ -49,7 +49,7 @@ model Session {
   endTime     DateTime
 
   eventId     String
-  event       Event    @relation(fields: [eventId], references: [id])
+  event       Event    @relation(fields: [eventId], references: [id], onDelete : Cascade)
 
   roomId      String
   room        Room     @relation(fields: [roomId], references: [id])
@@ -76,8 +76,8 @@ model SessionSpeaker {
   sessionId  String
   speakerId  String
 
-  session    Session @relation(fields: [sessionId], references: [id])
-  speaker    Speaker @relation(fields: [speakerId], references: [id])
+  session    Session @relation(fields: [sessionId], references: [id], onDelete : Cascade)
+  speaker    Speaker @relation(fields: [speakerId], references: [id], onDelete : Cascade)
 
   @@unique([sessionId, speakerId])
 }
@@ -87,7 +87,7 @@ model SpeakerLink {
   url       String
 
   speakerId String
-  speaker   Speaker @relation(fields: [speakerId], references: [id])
+  speaker   Speaker @relation(fields: [speakerId], references: [id], onDelete : Cascade)
 }
 
 model Question {
@@ -98,7 +98,7 @@ model Question {
   createdAt   DateTime @default(now())
 
   sessionId   String
-  session     Session  @relation(fields: [sessionId], references: [id])
+  session     Session  @relation(fields: [sessionId], references: [id], onDelete : Cascade)
 
   votes       QuestionVote[]
 }
@@ -110,7 +110,7 @@ model QuestionVote {
 
   createdAt   DateTime @default(now())
 
-  question    Question @relation(fields: [questionId], references: [id])
+  question    Question @relation(fields: [questionId], references: [id], onDelete : Cascade)
 
   @@unique([questionId, visitorId]) // pour empêcher le double vote
 }
@@ -123,7 +123,7 @@ model Favorite {
 
   createdAt  DateTime @default(now())
 
-  session    Session  @relation(fields: [sessionId], references: [id])
+  session    Session  @relation(fields: [sessionId], references: [id], onDelete : Cascade)
 
   @@unique([visitorId, sessionId])
 }

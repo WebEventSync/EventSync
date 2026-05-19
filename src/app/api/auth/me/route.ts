@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAuth } from "@/lib/middleware/require-auth";
+import { requireAuth } from "@/lib/utils/jwt";
 
 export async function GET(req: Request) {
     try {
