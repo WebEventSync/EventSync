@@ -3,7 +3,7 @@ import type { Prisma } from "@/generated/prisma";
 
 const SESSION_INCLUDE = {
   room: { select: { id: true, name: true } },
-  speakers: { select: { id: true, fullName: true } },
+  speakers: { include: { speaker: { select: { id: true, firstName: true, lastName: true, photo: true, biography: true } } } },
 } satisfies Prisma.SessionInclude;
 
 export class SessionRepository {

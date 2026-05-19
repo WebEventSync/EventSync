@@ -10,9 +10,7 @@ export class EventRepository {
             where : {
                 id : id
             },
-            data : {
-                event
-            }
+            data : event
         })
     }
     async delete_event(id : string){
