@@ -41,6 +41,13 @@ export class SessionService {
     await this.assert_event_exists(eventId);
     await this.assert_room_exists(dto.roomId);
 
+    // Vérifier que tous les speakers existent
+    if (dto.speakerIds?.length) {
+      for (const speakerId of dto.speakerIds) {
+        await this.assert_speaker_exists(speakerId);
+      }
+    }
+
     return this.session_repository.create_session({
       title: dto.title,
       description: dto.description,
@@ -50,7 +57,7 @@ export class SessionService {
       room: { connect: { id: dto.roomId } },
       event: { connect: { id: eventId } },
       ...(dto.speakerIds?.length
-        ? { speakers: { connect: dto.speakerIds.map((id) => ({ id })) } }
+        ? { speakers: { create: dto.speakerIds.map((speakerId) => ({ speakerId })) } }
         : {}),
     });
   }
