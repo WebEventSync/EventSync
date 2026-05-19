@@ -50,10 +50,9 @@ export class SessionService {
 
     return this.session_repository.create_session({
       title: dto.title,
-      description: dto.description,
+      description: dto.description||"",
       startTime: new Date(dto.startTime),
       endTime: new Date(dto.endTime),
-      capacity: dto.capacity,
       room: { connect: { id: dto.roomId } },
       event: { connect: { id: eventId } },
       ...(dto.speakerIds?.length
