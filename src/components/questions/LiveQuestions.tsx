@@ -47,27 +47,33 @@ export default function LiveQuestions({
   }, [sessionId]);
 
   const handleUpvote = async (questionId: string) => {
-    // Si déjà voté → on ignore
-    if (votedQuestions.has(questionId)) return;
+  try {
+    const res = await fetch(`/api/questions/${questionId}/upvote`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ visitorId }),
+    });
 
-    try {
-      const res = await fetch(`/api/questions/${questionId}/upvote`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ visitorId }),
-      });
-
-      if (res.ok) {
+    if (res.ok) {
+      const data = await res.json();
+      
+      // Mettre à jour localement l'état des votes
+      if (data.action === "increment") {
         setVotedQuestions(prev => new Set(prev).add(questionId));
-        fetchQuestions(); // Rafraîchir les upvotes
-      } else if (res.status === 409) {
-        // Déjà voté côté serveur
-        setVotedQuestions(prev => new Set(prev).add(questionId));
+      } else {
+        setVotedQuestions(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(questionId);
+          return newSet;
+        });
       }
-    } catch (err) {
-      console.error(err);
+      
+      fetchQuestions();
     }
-  };
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   const handleNewQuestion = () => {
     fetchQuestions();
