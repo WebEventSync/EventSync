@@ -23,26 +23,33 @@ export default function QuestionCard({
   return (
     <div className="bg-slate-900/60 border border-slate-700 rounded-3xl p-6 hover:border-slate-500 transition-all group">
       <div className="flex gap-5">
+        {/* Bouton Vote avec Cœur */}
         <button
           onClick={onUpvote}
           disabled={hasVoted}
-          className={`flex-shrink-0 w-14 h-14 rounded-2xl flex flex-col items-center justify-center transition-all ${
+          className={`flex-shrink-0 w-16 h-16 rounded-3xl flex flex-col items-center justify-center transition-all duration-200 ${
             hasVoted 
-              ? 'bg-emerald-500/10 text-emerald-400 cursor-not-allowed' 
-              : 'hover:bg-slate-700 text-slate-400 hover:text-sky-400'
+              ? 'bg-pink-500/10 text-pink-400 border border-pink-500/30' 
+              : 'hover:bg-slate-700 text-slate-400 hover:text-pink-400 border border-slate-600 hover:border-pink-500/30'
           }`}
         >
-          <span className="text-2xl">▲</span>
-          <span className="font-mono text-sm mt-1">{question.upvotes}</span>
+          <span className="text-3xl transition-transform hover:scale-110">
+            {hasVoted ? '❤️' : '♡'}
+          </span>
+          <span className="font-mono text-sm mt-1 font-semibold">
+            {question.upvotes}
+          </span>
         </button>
 
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 pt-1">
           <p className="text-slate-200 text-[17px] leading-relaxed">
             {question.content}
           </p>
           
-          <div className="flex items-center gap-3 mt-4 text-xs text-slate-500">
-            {question.authorName && <span>par {question.authorName}</span>}
+          <div className="flex items-center gap-3 mt-5 text-xs text-slate-500">
+            {question.authorName && (
+              <span className="font-medium text-slate-400">par {question.authorName}</span>
+            )}
             <span>•</span>
             <span>
               {formatDistanceToNow(new Date(question.createdAt), { 

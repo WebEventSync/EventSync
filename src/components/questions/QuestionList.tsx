@@ -11,16 +11,16 @@ type Question = {
 export default function QuestionList({ 
   questions, 
   onUpvote, 
-  visitorId 
+  votedQuestions 
 }: { 
   questions: Question[]; 
   onUpvote: (id: string) => void; 
-  visitorId: string;
+  votedQuestions: Set<string>;
 }) {
   if (questions.length === 0) {
     return (
       <div className="text-center py-16 text-slate-400">
-        Aucune question pour le moment. Soyez le premier à en poser !
+        Aucune question pour le moment.<br />Soyez le premier à en poser une !
       </div>
     );
   }
@@ -32,7 +32,7 @@ export default function QuestionList({
           key={q.id}
           question={q}
           onUpvote={() => onUpvote(q.id)}
-          hasVoted={false} // Tu peux améliorer ça plus tard avec un Set de votes
+          hasVoted={votedQuestions.has(q.id)}
         />
       ))}
     </div>

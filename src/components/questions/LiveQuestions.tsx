@@ -22,6 +22,8 @@ export default function LiveQuestions({
 }) {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
+  const [votedQuestions, setVotedQuestions] = useState<Set<string>>(new Set());
+  
   const visitorId = getVisitorId();
 
   const fetchQuestions = async () => {
@@ -45,6 +47,9 @@ export default function LiveQuestions({
   }, [sessionId]);
 
   const handleUpvote = async (questionId: string) => {
+    // Si déjà voté → on ignore
+    if (votedQuestions.has(questionId)) return;
+
     try {
       const res = await fetch(`/api/questions/${questionId}/upvote`, {
         method: 'POST',
@@ -53,9 +58,11 @@ export default function LiveQuestions({
       });
 
       if (res.ok) {
-        fetchQuestions(); // Rafraîchir la liste
+        setVotedQuestions(prev => new Set(prev).add(questionId));
+        fetchQuestions(); // Rafraîchir les upvotes
       } else if (res.status === 409) {
-        alert("Vous avez déjà voté pour cette question.");
+        // Déjà voté côté serveur
+        setVotedQuestions(prev => new Set(prev).add(questionId));
       }
     } catch (err) {
       console.error(err);
@@ -67,12 +74,11 @@ export default function LiveQuestions({
   };
 
   if (loading) {
-    return <div className="text-slate-400 py-10 text-center">Chargement des questions en cours...</div>;
+    return <div className="text-slate-400 py-10 text-center">Chargement des questions...</div>;
   }
 
   return (
     <div className="space-y-10">
-      {/* Formulaire */}
       {isLive ? (
         <QuestionForm 
           sessionId={sessionId} 
@@ -80,15 +86,14 @@ export default function LiveQuestions({
         />
       ) : (
         <div className="bg-slate-900/50 border border-slate-700 rounded-3xl p-8 text-center">
-          <p className="text-slate-400">Les questions sont uniquement disponibles pendant que la session est en direct.</p>
+          <p className="text-slate-400">Les questions sont uniquement disponibles pendant la session en direct.</p>
         </div>
       )}
 
-      {/* Liste des questions */}
       <QuestionList 
         questions={questions} 
         onUpvote={handleUpvote} 
-        visitorId={visitorId}
+        votedQuestions={votedQuestions}
       />
     </div>
   );
