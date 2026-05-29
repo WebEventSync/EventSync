@@ -1,53 +1,54 @@
-import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(
     req: Request,
     { params }: { params: Promise<{ questionId: string }> }
 ) {
     const { questionId } = await params;
-
-    const body = await req.json();
-    const visitorId = body.visitorId;
+    const { visitorId } = await req.json();
 
     if (!visitorId) {
-        return NextResponse.json(
-            { error: "Missing visitorId" },
-            { status: 400 }
-        );
+        return NextResponse.json({ error: "Missing visitorId" }, { status: 400 });
     }
 
     try {
-        // 1. créer vote (si existe déjà → erreur)
-        await prisma.questionVote.create({
-            data: {
-                questionId,
-                visitorId
+        const existingVote = await prisma.questionVote.findUnique({
+            where: {
+                questionId_visitorId: {
+                    questionId,
+                    visitorId
+                }
             }
         });
 
-        // 2. increment upvotes
-        const updated = await prisma.question.update({
-            where: { id: questionId },
-            data: {
-                upvotes: { increment: 1 }
-            }
-        });
+        if (existingVote) {
+            // === RETIRER le vote ===
+            await prisma.questionVote.delete({
+                where: { id: existingVote.id }
+            });
 
-        return NextResponse.json(updated);
+            await prisma.question.update({
+                where: { id: questionId },
+                data: { upvotes: { decrement: 1 } }
+            });
 
-    } catch (e: any) {
-        // Prisma unique constraint violation
-        if (e.code === "P2002") {
-            return NextResponse.json(
-                { error: "Already voted" },
-                { status: 409 }
-            );
+            return NextResponse.json({ message: "Vote removed", action: "decrement" });
+        } else {
+            // === AJOUTER le vote ===
+            await prisma.questionVote.create({
+                data: { questionId, visitorId }
+            });
+
+            await prisma.question.update({
+                where: { id: questionId },
+                data: { upvotes: { increment: 1 } }
+            });
+
+            return NextResponse.json({ message: "Vote added", action: "increment" });
         }
-
-        return NextResponse.json(
-            { error: "Internal error" },
-            { status: 500 }
-        );
+    } catch (e: any) {
+        console.error(e);
+        return NextResponse.json({ error: "Internal error" }, { status: 500 });
     }
 }

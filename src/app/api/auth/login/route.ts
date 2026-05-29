@@ -1,22 +1,70 @@
 import { NextResponse } from "next/server";
-import { authService } from "@/services/auth.service";
+import { prisma } from "@/lib/prisma";
+import { signToken } from "@/lib/utils/jwt";
+import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
 
-        const result = await authService.login(
-            body.email,
-            body.password
+        const { email, password } = body;
+
+        if (!email || !password) {
+            return NextResponse.json(
+                { error: "Email et mot de passe obligatoires" },
+                { status: 400 }
+            );
+        }
+
+        const admin = await prisma.admin.findUnique({
+            where: { email },
+        });
+
+        if (!admin) {
+            return NextResponse.json(
+                { error: "Identifiants invalides" },
+                { status: 401 }
+            );
+        }
+
+        const isValid = await bcrypt.compare(
+            password,
+            admin.password
         );
 
-        return NextResponse.json(result);
+        if (!isValid) {
+            return NextResponse.json(
+                { error: "Identifiants invalides" },
+                { status: 401 }
+            );
+        }
 
-    } catch (e: any) {
+        const token = await signToken({
+    id: admin.id,
+    email: admin.email,
+});
+
+        const response = NextResponse.json(
+            { success: true },
+            { status: 200 }
+        );
+
+        response.cookies.set("token", token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            path: "/",
+            maxAge: 60 * 60 * 24,
+        });
+
+        return response;
+
+    } catch (error) {
+        console.error(error);
 
         return NextResponse.json(
-            { error: e.message },
-            { status: 401 }
+            { error: "Erreur serveur" },
+            { status: 500 }
         );
     }
 }
