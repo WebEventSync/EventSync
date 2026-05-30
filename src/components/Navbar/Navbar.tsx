@@ -34,7 +34,7 @@ export default function Navbar() {
         className={`mx-auto max-w-7xl transition-all duration-500 ${
           scrolled
             ? ''
-            : 'rounded-3xl border border-cyan-400/10 bg-[#0B1023]/90 shadow-[0_0_40px_rgba(34,211,238,0.08)] backdrop-blur-2xl'
+            : 'rounded-3xl bg-[#0B1023]/90 shadow-[0_0_40px_rgba(34,211,238,0.08)] backdrop-blur-2xl'
         }`}
       >
         <div className="flex h-20 items-center justify-between px-8">
