@@ -22,7 +22,7 @@ export class EventService{
             throw new Error(`no id provided`)
         }
         try{
-            this.event_repositrory.get_event_by_id(id)
+            await this.event_repositrory.get_event_by_id(id)
         }catch(error){
             throw new Error(`event ${id} doesn't exist`)
         }
@@ -34,7 +34,7 @@ export class EventService{
             throw new Error(`no id provided`)
         }
         try{
-            this.event_repositrory.get_event_by_id(id)
+            await this.event_repositrory.get_event_by_id(id)
         }catch(error){
             throw new Error(`event ${id} doesn't exist`)
         }
