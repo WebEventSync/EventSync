@@ -16,21 +16,21 @@ export class SpeakerRepository {
             where: { id },
         });
     }
-
     async find_sessions_by_speaker(id: string) {
         return prisma.session.findMany({
             where: {
                 speakers: {
-                    some: { id },
+                    some: { speakerId: id },
                 },
             },
             include: {
                 room: true,
-                speakers: true,
+                speakers: { include: { speaker: true } },
             },
             orderBy: { startTime: "asc" },
         });
     }
+    
     async create_speaker(data: { firstName: string; lastName: string; photo?: string | null; biography?: string | null; links?: string[];
     }) {
         return prisma.speaker.create({
