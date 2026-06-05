@@ -4,7 +4,7 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
   const { id } = await params;
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-950 to-black pb-20">
+    <main className="min-h-screen bg-linear-to-b from-slate-950 to-black pb-20">
       <SessionDetail sessionId={id} />
     </main>
   );
