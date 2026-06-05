@@ -1,5 +1,6 @@
 export interface CreateRoomDto {
   name: string;
+  capacity: number;
 }
 
 export interface UpdateRoomDto {
