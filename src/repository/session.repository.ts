@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma";
 
 const SESSION_INCLUDE = {
-  event : {select: {title: true}},
+  event : {select: {id: true, title: true}},
   room: { select: { id: true, name: true } },
   speakers: { include: { speaker: { select: { id: true, firstName: true, lastName: true, photo: true, biography: true } } } },
 } satisfies Prisma.SessionInclude;

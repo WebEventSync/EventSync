@@ -29,6 +29,7 @@ export class RoomService {
 
     return this.room_repository.update_room(id, {
       ...(dto.name ? { name: dto.name.trim() } : {}),
+      ...(dto.capacity? {capacity: dto.capacity}: {})
     });
   }
 

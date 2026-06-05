@@ -90,6 +90,18 @@ export class SessionService {
       ...(dto.endTime ? { endTime: new Date(dto.endTime) } : {}),
       ...(dto.capacity !== undefined ? { capacity: dto.capacity } : {}),
       ...(dto.roomId ? { room: { connect: { id: dto.roomId } } } : {}),
+      ...(dto.eventId ? {event: {connect: { id: dto.eventId} } } : {}),
+      ...(dto.speakerIds?.length && {
+        speakers: {
+          create: dto.speakerIds.map((speakerId) => ({
+            speaker: {
+              connect: {
+                id: speakerId,
+              },
+            },
+          })),
+        },
+      })
     });
   }
 
