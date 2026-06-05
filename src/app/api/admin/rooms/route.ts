@@ -41,12 +41,12 @@ export async function POST(req: Request) {
             );
         }
 
-        const room = await room_service.create_room({ name: name.trim() });
+        const room = await room_service.create_room({ name: name.trim(), capacity: capacity });        
         return NextResponse.json(room, { status: 201 , headers: corsHeaders });
     } catch (error) {
         return NextResponse.json(
-            { error: "Erreur interne du serveur" },
-            { status: 500 , headers: corsHeaders }
+            { message: error instanceof Error ? error.message : String(error) },
+            { status: 500, headers: corsHeaders }
         );
     }
 }

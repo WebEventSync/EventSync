@@ -21,7 +21,7 @@ export class RoomService {
   }
 
   async create_room(dto: CreateRoomDto) {
-    return this.room_repository.create_room({ name: dto.name.trim() });
+    return await this.room_repository.create_room({ name: dto.name.trim(), capacity: dto.capacity });
   }
 
   async update_room(id: string, dto: UpdateRoomDto) {
