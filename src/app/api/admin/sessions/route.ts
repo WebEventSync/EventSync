@@ -10,39 +10,61 @@ export async function OPTIONS() {
   return new Response(null, { status: 204, headers: corsHeaders });
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(){
     try {
-        const { searchParams } = new URL(req.url);
-        const eventId = searchParams.get("eventId");
-
-        if (!eventId) {
-            return NextResponse.json(
-                { error: "Le paramètre 'eventId' est requis" },
-                { status: 400 , headers: corsHeaders }
-            );
-        }
-
-        const sessions = await session_service.get_sessions_by_event(eventId, {});
-        return NextResponse.json(sessions, {
+        const result = await session_service.get_all_sessions()
+        return NextResponse.json(
+            result,
+            {
             status: 200,
             headers: {
-                "Content-Range": `sessions 0-${sessions.length - 1}/${sessions.length}`,
+                ...corsHeaders,
+                "Content-Range": `events 0-${result.length - 1}/${result.length}`,
                 "Access-Control-Expose-Headers": "Content-Range",
-                ...corsHeaders
             },
-        });
-    } catch (error) {
+        }
+        )
+    }catch (err){
         return NextResponse.json(
-            { error: error instanceof Error ? error.message : "Erreur interne" },
-            { status: 500 , headers: corsHeaders }
+            { message: err instanceof Error ? err.message : String(err) },
+            { status: 500, headers: corsHeaders }
         );
     }
 }
 
+// export async function GET(req: NextRequest) {
+//     try {
+//         const { searchParams } = new URL(req.url);
+//         const eventId = searchParams.get("eventId");
+
+//         if (!eventId) {
+//             return NextResponse.json(
+//                 { error: "Le paramètre 'eventId' est requis" },
+//                 { status: 400 , headers: corsHeaders }
+//             );
+//         }
+
+//         const sessions = await session_service.get_sessions_by_event(eventId, {});
+//         return NextResponse.json(sessions, {
+//             status: 200,
+//             headers: {
+//                 "Content-Range": `sessions 0-${sessions.length - 1}/${sessions.length}`,
+//                 "Access-Control-Expose-Headers": "Content-Range",
+//                 ...corsHeaders
+//             },
+//         });
+//     } catch (error) {
+//         return NextResponse.json(
+//             { error: error instanceof Error ? error.message : "Erreur interne" },
+//             { status: 500 , headers: corsHeaders }
+//         );
+//     }
+// }
+
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { eventId, ...dto } = body;
+        const { speakersId, eventId, ...dto } = body;
 
         if (!eventId) {
             return NextResponse.json(
@@ -57,7 +79,7 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const session = await session_service.create_session(eventId, dto);
+        const session = await session_service.create_session(eventId, dto, speakersId);
         return NextResponse.json(session, { status: 201 , headers: corsHeaders });
     } catch (error) {
         console.error("[POST /api/admin/sessions]", error);
