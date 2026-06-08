@@ -3,7 +3,7 @@ import type { Prisma } from "@/generated/prisma";
 
 const SESSION_INCLUDE = {
   room: { select: { id: true, name: true } },
-  speakers: { select: { id: true, fullName: true } },
+  speakers: { include: { speaker: { select: { id: true, firstName: true, lastName: true, photo: true, biography: true } } } },
 } satisfies Prisma.SessionInclude;
 
 export class SessionRepository {
@@ -36,8 +36,7 @@ export class SessionRepository {
 
   async create_session(data: Prisma.SessionCreateInput) {
     return prisma.session.create({
-      data,
-      include: SESSION_INCLUDE,
+      data
     });
   }
 
@@ -63,7 +62,7 @@ export class SessionRepository {
   async add_speaker_to_session(sessionId: string, speakerId: string) {
     return prisma.session.update({
       where: { id: sessionId },
-      data: { speakers: { connect: { id: speakerId } } },
+      data: { speakers: { create: { speakerId } } },
       include: SESSION_INCLUDE,
     });
   }
