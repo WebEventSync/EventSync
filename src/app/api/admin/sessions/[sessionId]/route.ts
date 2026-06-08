@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SessionRepository } from "@/repository/session.repository";
 import { SessionService } from "@/services/session.service";
+import corsHeaders from "@/app/api/admin/core_header";
 
 const session_service = new SessionService(new SessionRepository());
 
 interface Params {
     params: Promise<{ sessionId: string }>;
 }
-
-import corsHeaders from "@/app/api/admin/core_header";
 
 export async function OPTIONS() {
   return new Response(null, { status: 204, headers: corsHeaders });

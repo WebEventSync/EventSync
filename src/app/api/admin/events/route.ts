@@ -1,10 +1,9 @@
 import { EventRepository } from "@/repository/event.repository";
 import { EventService } from "@/services/event.service";
 import { NextResponse } from "next/server";
+import corsHeaders from "@/app/api/admin/core_header";
 
 const event_service = new EventService(new EventRepository());
-
-import corsHeaders from "@/app/api/admin/core_header";
 
 export async function OPTIONS() {
   return new Response(null, { status: 204, headers: corsHeaders });

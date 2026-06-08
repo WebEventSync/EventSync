@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { SpeakerRepository } from "@/repository/speaker.repository";
 import { SpeakerService } from "@/services/speaker.service";
+import corsHeaders from "@/app/api/admin/core_header";
 
 const speaker_service = new SpeakerService(new SpeakerRepository());
-
-import corsHeaders from "@/app/api/admin/core_header";
 
 export async function OPTIONS() {
   return new Response(null, { status: 204, headers: corsHeaders });

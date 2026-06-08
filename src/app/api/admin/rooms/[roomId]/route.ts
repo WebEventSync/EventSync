@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { RoomRepository } from "@/repository/room.repository";
 import { RoomService } from "@/services/room.service";
+import corsHeaders from "@/app/api/admin/core_header";
 
 const room_service = new RoomService(new RoomRepository());
-
-import corsHeaders from "@/app/api/admin/core_header";
 
 export async function OPTIONS() {
   return new Response(null, { status: 204, headers: corsHeaders });
