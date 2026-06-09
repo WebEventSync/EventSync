@@ -39,7 +39,6 @@ function getLinkLabel(url: string) {
   }
 }
 
-
 export default function SpeakerDetail({ speakerId }: { speakerId: string }) {
   const [speaker, setSpeaker] = useState<Speaker | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
