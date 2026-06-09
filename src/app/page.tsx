@@ -12,7 +12,7 @@ export default async function Home() {
   const events = await get_events()
 
   return (
-    <main className="min-h-screen p-6 bg-slate-950/85 text-slate-100 font-sans">
+    <main className="min-h-screen p-6 font-sans">
       <EventList events={events} />
     </main>
   )

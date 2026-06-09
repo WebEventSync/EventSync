@@ -29,13 +29,10 @@ export class SpeakerService {
     }
 
     async put_speaker(data: {
-        fullName: any;
-        photo: any;
-        bio: any;
-        twitter: any;
-        linkedin: any;
-        github: any;
-        website: any
+        firstName?: string;
+        lastName?: string;
+        photo?: string | null;
+        biography?: string | null;
     }, id: string) {
         return this.speaker_repository.put_speaker(data, id);
     }

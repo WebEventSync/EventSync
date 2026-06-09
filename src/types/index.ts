@@ -1,9 +1,11 @@
 export interface CreateRoomDto {
   name: string;
+  capacity: number;
 }
 
 export interface UpdateRoomDto {
   name?: string;
+  capacity: number
 }
 
 export interface CreateSessionDto {
@@ -23,6 +25,8 @@ export interface UpdateSessionDto {
   endTime?: string;
   capacity?: number;
   roomId?: string;
+  eventId?: string,
+  speakerIds?: string[]
 }
 
 export interface SessionFilters {

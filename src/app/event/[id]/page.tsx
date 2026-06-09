@@ -66,7 +66,7 @@ export default async function Event({ params }: { params: Promise<{ id: string }
                 className="mx-4 rounded-2xl relative h-96 bg-slate-900/60 flex items-end overflow-hidden"
                 style={style}
             >
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-slate-900/30 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-slate-900/70 via-slate-900/30 to-transparent" />
                 <div className="relative z-10 p-8">
                     <h1 className="text-4xl font-bold text-white mb-2">{event.title}</h1>
                 </div>

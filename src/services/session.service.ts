@@ -24,6 +24,10 @@ export class SessionService {
 
   // ─── PUBLIC ────────────────────────────────────────────────────────────────
 
+  async get_all_sessions(){
+    return await this.session_repository.get_all_sessions()
+  }
+
   async get_sessions_by_event(eventId: string, filters: SessionFilters) {
     await this.assert_event_exists(eventId);
     return this.session_repository.find_sessions_by_event(eventId, filters);
@@ -37,21 +41,39 @@ export class SessionService {
 
   // ─── ADMIN ────────────────────────────────────────────────────────────────
 
-  async create_session(eventId: string, dto: CreateSessionDto) {
+  async create_session(eventId: string, dto: CreateSessionDto, speakersId: string[]) {
     await this.assert_event_exists(eventId);
     await this.assert_room_exists(dto.roomId);
 
     return this.session_repository.create_session({
       title: dto.title,
-      description: dto.description,
+      description: dto.description || "",
       startTime: new Date(dto.startTime),
       endTime: new Date(dto.endTime),
-      capacity: dto.capacity,
-      room: { connect: { id: dto.roomId } },
-      event: { connect: { id: eventId } },
-      ...(dto.speakerIds?.length
-        ? { speakers: { connect: dto.speakerIds.map((id) => ({ id })) } }
-        : {}),
+
+      room: {
+        connect: {
+          id: dto.roomId,
+        },
+      },
+
+      event: {
+        connect: {
+          id: eventId,
+        },
+      },
+
+      ...(dto.speakerIds?.length && {
+        speakers: {
+          create: dto.speakerIds.map((speakerId) => ({
+            speaker: {
+              connect: {
+                id: speakerId,
+              },
+            },
+          })),
+        },
+      }),
     });
   }
 
@@ -68,6 +90,18 @@ export class SessionService {
       ...(dto.endTime ? { endTime: new Date(dto.endTime) } : {}),
       ...(dto.capacity !== undefined ? { capacity: dto.capacity } : {}),
       ...(dto.roomId ? { room: { connect: { id: dto.roomId } } } : {}),
+      ...(dto.eventId ? {event: {connect: { id: dto.eventId} } } : {}),
+      ...(dto.speakerIds?.length && {
+        speakers: {
+          create: dto.speakerIds.map((speakerId) => ({
+            speaker: {
+              connect: {
+                id: speakerId,
+              },
+            },
+          })),
+        },
+      })
     });
   }
 

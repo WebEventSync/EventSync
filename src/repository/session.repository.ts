@@ -2,11 +2,16 @@ import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma";
 
 const SESSION_INCLUDE = {
+  event : {select: {id: true, title: true}},
   room: { select: { id: true, name: true } },
-  speakers: { select: { id: true, fullName: true } },
+  speakers: { include: { speaker: { select: { id: true, firstName: true, lastName: true, photo: true, biography: true } } } },
 } satisfies Prisma.SessionInclude;
 
 export class SessionRepository {
+
+  async get_all_sessions(){
+    return prisma.session.findMany({include: SESSION_INCLUDE});
+  }
 
   async find_sessions_by_event(eventId: string, filters: { live?: boolean; roomId?: string }) {
     const now = new Date();

@@ -7,12 +7,8 @@ export class EventRepository {
     }
     async put_event(event : Prisma.EventUpdateInput, id: string){
         return prisma.event.update({
-            where : {
-                id : id
-            },
-            data : {
-                event
-            }
+            where: { id },
+            data: { ...event }
         })
     }
     async delete_event(id : string){
