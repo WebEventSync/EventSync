@@ -15,6 +15,11 @@ const get_speakers = async (session_id: string) => {
     return speakers.json();
 };
 
+function isLive(session: any): boolean {
+  const now = new Date()
+  return now >= new Date(session.startTime) && now <= new Date(session.endTime)
+}
+
 function formatDateRange(startDate: string | Date, endDate: string | Date) {
     if (!startDate || !endDate) return 'Date inconnue';
     const start = new Date(startDate);
@@ -109,7 +114,9 @@ export default async function Event({ params }: { params: Promise<{ id: string }
                     <h2 className="text-2xl font-semibold text-white mb-6">Sessions</h2>
                     {sessionsWithSpeakers && sessionsWithSpeakers.length > 0 ? (
                         <div className="space-y-4">
-                            {sessionsWithSpeakers.map((session: any) => (
+                            {sessionsWithSpeakers.map((session: any) => {
+                                const live = isLive(session)
+                                return(
                                 <Link 
                                     key={session.id}
                                     href={`/sessions/${session.id}`}
@@ -119,6 +126,12 @@ export default async function Event({ params }: { params: Promise<{ id: string }
                                         <div className="flex justify-between items-start mb-4">
                                             <h3 className="text-xl font-semibold text-white group-hover:text-sky-300 transition-colors">
                                                 {session.title}
+                                                {live && (
+                                                    <span className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/20 border border-emerald-500/40 rounded-full text-emerald-300 text-xs font-semibold">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                                    LIVE
+                                                    </span>
+                                                )}
                                             </h3>
                                             <div className="text-sm text-slate-400">
                                                 {new Date(session.startTime).toLocaleTimeString('fr-FR', {
@@ -171,7 +184,7 @@ export default async function Event({ params }: { params: Promise<{ id: string }
                                         )}
                                     </div>
                                 </Link>
-                            ))}
+                            )})}
                         </div>
                     ) : (
                         <p className="text-slate-400 text-center py-8">Aucune session programmée pour cet événement.</p>

@@ -91,14 +91,11 @@ export class SessionService {
       ...(dto.capacity !== undefined ? { capacity: dto.capacity } : {}),
       ...(dto.roomId ? { room: { connect: { id: dto.roomId } } } : {}),
       ...(dto.eventId ? {event: {connect: { id: dto.eventId} } } : {}),
-      ...(dto.speakerIds?.length && {
+      ...(dto.speakerIds !== undefined && {
         speakers: {
+          deleteMany: {},
           create: dto.speakerIds.map((speakerId) => ({
-            speaker: {
-              connect: {
-                id: speakerId,
-              },
-            },
+            speaker: { connect: { id: speakerId } },
           })),
         },
       })
