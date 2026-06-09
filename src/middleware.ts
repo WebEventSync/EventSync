@@ -43,12 +43,12 @@ export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith("/api/admin")) {
     const token = request.cookies.get("token")?.value;
 
-    if (!token) {
-      return NextResponse.json(
-        { error: "Non authentifié" },
-        { status: 401 }
-      );
-    }
+  if (!token) {
+    return NextResponse.json(
+      { error: "Non authentifié" },
+      { status: 401, headers: response.headers }
+    );
+  }
 
     try {
       const secret = new TextEncoder().encode(
@@ -61,7 +61,7 @@ export async function middleware(request: NextRequest) {
     } catch {
       return NextResponse.json(
         { error: "Token invalide ou expiré" },
-        { status: 401 }
+        { status: 401, headers: response.headers }
       );
     }
   }
