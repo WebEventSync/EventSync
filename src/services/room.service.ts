@@ -1,7 +1,6 @@
 
 import { RoomRepository } from "@/repository/room.repository";
-import { AppError, CreateRoomDto, UpdateRoomDto } from "@//types";
-
+import { AppError, CreateRoomDto, UpdateRoomDto } from "@/types";
 export class RoomService {
   constructor(private room_repository: RoomRepository) {}
 
@@ -21,11 +20,14 @@ export class RoomService {
   }
 
   async create_room(dto: CreateRoomDto) {
-    return this.room_repository.create_room({ name: dto.name.trim() });
+    return this.room_repository.create_room({
+      name: dto.name.trim(),
+      capacity: dto.capacity ?? 0,
+    });
   }
 
   async update_room(id: string, dto: UpdateRoomDto) {
-    await this.get_room_by_id(id); // vérifie existence
+    await this.get_room_by_id(id);
 
     return this.room_repository.update_room(id, {
       ...(dto.name ? { name: dto.name.trim() } : {}),
@@ -33,7 +35,7 @@ export class RoomService {
   }
 
   async delete_room(id: string) {
-    await this.get_room_by_id(id); // vérifie existence
+    await this.get_room_by_id(id);
 
     const sessionCount = await this.room_repository.count_sessions_by_room(id);
     if (sessionCount > 0) throw new AppError("ROOM_HAS_SESSIONS");

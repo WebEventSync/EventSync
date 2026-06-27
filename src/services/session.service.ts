@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 export class SessionService {
   constructor(private session_repository: SessionRepository) {}
 
-  // ─── Assertions privées ────────────────────────────────────────────────────
+  // Assertions privées
 
   private async assert_event_exists(eventId: string) {
     const event = await prisma.event.findUnique({ where: { id: eventId } });
@@ -22,7 +22,7 @@ export class SessionService {
     if (!speaker) throw new AppError("SPEAKER_NOT_FOUND");
   }
 
-  // ─── PUBLIC ────────────────────────────────────────────────────────────────
+  //PUBLIC
 
   async get_sessions_by_event(eventId: string, filters: SessionFilters) {
     await this.assert_event_exists(eventId);
@@ -43,15 +43,20 @@ export class SessionService {
 
     return this.session_repository.create_session({
       title: dto.title,
-      description: dto.description,
+      description: dto.description ?? "",
       startTime: new Date(dto.startTime),
       endTime: new Date(dto.endTime),
-      capacity: dto.capacity,
       room: { connect: { id: dto.roomId } },
       event: { connect: { id: eventId } },
       ...(dto.speakerIds?.length
-        ? { speakers: { connect: dto.speakerIds.map((id) => ({ id })) } }
-        : {}),
+          ? {
+            speakers: {
+              create: dto.speakerIds.map((speakerId) => ({
+                speakerId: speakerId,
+              })),
+            },
+          }
+          : {}),
     });
   }
 

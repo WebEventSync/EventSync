@@ -1,5 +1,6 @@
 export interface CreateRoomDto {
   name: string;
+  capacity?: number;
 }
 
 export interface UpdateRoomDto {
@@ -11,7 +12,6 @@ export interface CreateSessionDto {
   description?: string;
   startTime: string;
   endTime: string;
-  capacity?: number;
   roomId: string;
   speakerIds?: string[];
 }

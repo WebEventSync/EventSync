@@ -24,6 +24,13 @@ export class SessionRepository {
     });
   }
 
+  async find_all_sessions() {
+    return prisma.session.findMany({
+      include: SESSION_INCLUDE,
+      orderBy: { startTime: "asc" },
+    });
+  }
+
   async find_session_by_id(id: string) {
     return prisma.session.findUnique({
       where: { id },
