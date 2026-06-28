@@ -33,12 +33,11 @@ export class SessionService {
     return this.session_repository.find_sessions_by_event(eventId, filters);
   }
 
-  async get_session_by_id(id: string) {
-    const session = await this.session_repository.find_session_by_id(id);
-    if (!session) throw new AppError("SESSION_NOT_FOUND");
-    return session;
-  }
-
+ async get_session_by_id(id: string) {
+  const session = await this.session_repository.find_session_by_id(id);
+  if (!session) throw new AppError("SESSION_NOT_FOUND");
+  return session;
+}
   // ─── ADMIN ────────────────────────────────────────────────────────────────
 
   async create_session(eventId: string, dto: CreateSessionDto, speakersId: string[]) {
