@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { isSessionLive, formatSessionDate } from '@/lib/utils';
+import { formatSessionDate } from '@/lib/utils';
+import SessionsList from '@/components/sessions/SessionsList';
 
 const get_event = async (event_id: string) => {
     const event = await fetch(`http://localhost:3000/api/events/${event_id}`);
@@ -15,17 +16,29 @@ const get_speakers = async (session_id: string) => {
     const speakers = await fetch(`http://localhost:3000/api/sessions/${session_id}`);
     return speakers.json();
 };
-
 export default async function Event({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const event = await get_event(id);
     const { sessions } = await get_sessions(id);
 
     const sessionsWithSpeakers = await Promise.all(
-        (sessions || []).map(async (session: any) => ({
+    (sessions || []).map(async (session: any) => {
+        const fullSession = await get_speakers(session.id); // contient room, speakers, questions
+        return {
             ...session,
-            speakers: await get_speakers(session.id)
-        }))
+            room: fullSession.room,
+            speakers: fullSession.speakers || [],
+        };
+    })
+);
+
+    // Liste unique des salles présentes dans les sessions de cet événement
+    const rooms = Array.from(
+        new Map(
+            sessionsWithSpeakers
+                .filter((s: any) => s.room)
+                .map((s: any) => [s.room.id, { id: s.room.id, name: s.room.name }])
+        ).values()
     );
 
     const style = event.image ? { backgroundImage: `url(${event.image})` } : undefined;
@@ -85,87 +98,7 @@ export default async function Event({ params }: { params: Promise<{ id: string }
 
                 <div>
                     <h2 className="text-2xl font-semibold text-white mb-6">Sessions</h2>
-                    {sessionsWithSpeakers && sessionsWithSpeakers.length > 0 ? (
-                        <div className="space-y-4">
-                            {sessionsWithSpeakers.map((session: any) => {
-                                const isLive = isSessionLive(session.startTime, session.endTime);
-                                return (
-                                    <Link
-                                        key={session.id}
-                                        href={`/sessions/${session.id}`}
-                                        className="block group"
-                                    >
-                                        <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 hover:bg-slate-800/70 hover:border-sky-500/30 transition-all duration-200 cursor-pointer">
-                                            <div className="flex justify-between items-start mb-4">
-                                                <h3 className="text-xl font-semibold text-white group-hover:text-sky-300 transition-colors">
-                                                    {session.title}
-                                                </h3>
-
-                                                <div className="flex items-center gap-3">
-                                                    <div className="text-sm text-slate-400">
-                                                        {new Date(session.startTime).toLocaleTimeString('fr-FR', {
-                                                            hour: '2-digit',
-                                                            minute: '2-digit'
-                                                        })} - {new Date(session.endTime).toLocaleTimeString('fr-FR', {
-                                                            hour: '2-digit',
-                                                            minute: '2-digit'
-                                                        })}
-                                                    </div>
-
-                                                    {isLive && (
-                                                        <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/20 border border-emerald-500/40 rounded-full text-emerald-300 text-xs font-semibold">
-                                                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                                                            LIVE
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            <p className="text-slate-300 mb-4">{session.description}</p>
-
-                                            <div className="mb-4 text-sm text-slate-400">
-                                                <span>Salle: {session.room?.name || 'Non assignée'}</span>
-                                            </div>
-
-                                            {session.speakers && session.speakers.length > 0 && (
-                                                <div className="mt-4 border-t border-slate-600 pt-4">
-                                                    <h4 className="text-sm font-semibold text-sky-300 mb-3">Intervenants</h4>
-                                                    <div className="space-y-3">
-                                                        {session.speakers.map((speakerData: any) => {
-                                                            const speaker = speakerData.speaker;
-                                                            return (
-                                                                <div key={speaker.id} className="flex gap-3 p-3 bg-slate-700/30 rounded-lg">
-                                                                    {speaker.photo && (
-                                                                        <img
-                                                                            src={speaker.photo}
-                                                                            alt={`${speaker.firstName} ${speaker.lastName}`}
-                                                                            className="w-12 h-12 rounded-full object-cover shrink-0"
-                                                                        />
-                                                                    )}
-                                                                    <div className="flex-1">
-                                                                        <p className="font-semibold text-white">
-                                                                            {speaker.firstName} {speaker.lastName}
-                                                                        </p>
-                                                                        {speaker.biography && (
-                                                                            <p className="text-xs text-slate-300 mt-1 line-clamp-2">
-                                                                                {speaker.biography}
-                                                                            </p>
-                                                                        )}
-                                                                    </div>
-                                                                </div>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </Link>
-                                );
-                            })}
-                        </div>
-                    ) : (
-                        <p className="text-slate-400 text-center py-8">Aucune session programmée pour cet événement.</p>
-                    )}
+                    <SessionsList sessions={sessionsWithSpeakers} rooms={rooms} />
                 </div>
             </div>
         </div>
