@@ -24,6 +24,9 @@ export class SessionService {
 
   //PUBLIC
 
+  async get_all_sessions() {
+    return this.session_repository.find_all_sessions();
+  }
   async get_sessions_by_event(eventId: string, filters: SessionFilters) {
     await this.assert_event_exists(eventId);
     return this.session_repository.find_sessions_by_event(eventId, filters);
@@ -35,11 +38,13 @@ export class SessionService {
     return session;
   }
 
-  // ─── ADMIN ────────────────────────────────────────────────────────────────
+  // ADMIN
 
-  async create_session(eventId: string, dto: CreateSessionDto) {
+  async create_session(eventId: string, dto: CreateSessionDto, speakersId: string[] = []) {
     await this.assert_event_exists(eventId);
     await this.assert_room_exists(dto.roomId);
+
+    const allSpeakerIds = speakersId.length ? speakersId : (dto.speakerIds ?? []);
 
     return this.session_repository.create_session({
       title: dto.title,
@@ -48,12 +53,10 @@ export class SessionService {
       endTime: new Date(dto.endTime),
       room: { connect: { id: dto.roomId } },
       event: { connect: { id: eventId } },
-      ...(dto.speakerIds?.length
+      ...(allSpeakerIds.length
           ? {
             speakers: {
-              create: dto.speakerIds.map((speakerId) => ({
-                speakerId: speakerId,
-              })),
+              create: allSpeakerIds.map((speakerId) => ({ speakerId })),
             },
           }
           : {}),
