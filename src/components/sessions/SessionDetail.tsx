@@ -20,6 +20,7 @@ export default function SessionDetail({ sessionId }: { sessionId: string }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
     fetch(`/api/sessions/${sessionId}`)
@@ -36,6 +37,15 @@ export default function SessionDetail({ sessionId }: { sessionId: string }) {
         setLoading(false);
       });
   }, [sessionId]);
+
+  // Re-vérifie le statut live toutes les 15 secondes, sans rechargement manuel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(new Date());
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   if (loading) {
     return (
