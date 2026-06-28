@@ -17,7 +17,7 @@ export default function SessionHeader({ session, isLive }: Props) {
             </h1>
             {isLive && <LiveBadge />}
           </div>
-          
+
           <p className="text-slate-400 text-lg leading-relaxed max-w-3xl">
             {session.description}
           </p>
