@@ -1,7 +1,7 @@
 import { prisma } from "../lib/prisma";
 import { questionRepository } from "../repository/question.repository";
 
-export class QquestionService {
+export class QuestionService {
   async get_question(id: string) {
       return await this.question_repository.get_question(id)
   }

@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import { questionService } from "@/services/question.service";
+import { QuestionService } from "@/services/question.service";
+import { questionRepository } from "@/repository/question.repository";
+
+const questionService = new QuestionService(new questionRepository());
 
 export async function GET(
     req: Request,
