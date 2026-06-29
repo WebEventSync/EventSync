@@ -34,7 +34,7 @@ export async function GET(){
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { speakersId, eventId, ...dto } = body;
+        const { eventId, ...dto } = body;
 
         if (!eventId) {
             return NextResponse.json(
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const session = await session_service.create_session(eventId, dto, speakersId);
+        const session = await session_service.create_session(eventId, dto);
         return NextResponse.json(session, { status: 201 , headers: corsHeaders });
     } catch (error) {
         console.error("[POST /api/admin/sessions]", error);
