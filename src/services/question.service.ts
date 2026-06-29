@@ -2,13 +2,15 @@ import { prisma } from "../lib/prisma";
 import { QuestionRepository } from "../repository/question.repository";
 
 export class QuestionService {
+  constructor(private question_repository: QuestionRepository) {}
+
   async get_question(id: string) {
-      return await this.question_repository.get_question(id)
+    return await this.question_repository.get_question(id);
   }
+
   async update_session(id: string, body: any) {
-      return await this.question_repository.update(id, body)
+    return await this.question_repository.update(id, body);
   }
-  constructor(private question_repository: QuestionRepository){}
   async getBySession(sessionId: string) {
     return await this.question_repository.findBySession(sessionId);
   }
