@@ -19,25 +19,31 @@ model Admin {
   name     String
   email    String @unique
   password String
+
+  @@map("Admin")
 }
 
 model Event {
   id          String   @id @default(uuid())
   title       String
   description String
-  startDate   DateTime
-  endDate     DateTime
+  startDate   DateTime @map("startDate")
+  endDate     DateTime @map("endDate")
   place       String
 
-  sessions    Session[]
+  sessions Session[]
+
+  @@map("Event")
 }
 
 model Room {
-  id       String   @id @default(uuid())
+  id       String @id @default(uuid())
   name     String
   capacity Int
 
   sessions Session[]
+
+  @@map("Room")
 }
 
 model Session {
@@ -47,55 +53,93 @@ model Session {
   startTime   DateTime
   endTime     DateTime
 
-  eventId     String
-  event       Event    @relation(fields: [eventId], references: [id])
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id])
 
-  roomId      String
-  room        Room     @relation(fields: [roomId], references: [id])
+  roomId String
+  room   Room   @relation(fields: [roomId], references: [id])
 
-  questions   Question[]
-  speakers    SessionSpeaker[]
+  questions Question[]
+  speakers  SessionSpeaker[]
+  favorites Favorite[]
+
+  @@map("Session")
 }
 
 model Speaker {
-  id         String   @id @default(uuid())
-  firstName  String
-  lastName   String
-  photo      String?
-  biography  String?
+  id        String  @id @default(uuid())
+  firstName String
+  lastName  String
+  photo     String?
+  biography String?
 
-  sessions   SessionSpeaker[]
-  links      SpeakerLink[]
+  sessions SessionSpeaker[]
+  links    SpeakerLink[]
+
+  @@map("Speaker")
 }
 
 model SessionSpeaker {
-  id         String  @id @default(uuid())
+  id String @id @default(uuid())
 
-  sessionId  String
-  speakerId  String
+  sessionId String
+  speakerId String
 
-  session    Session @relation(fields: [sessionId], references: [id])
-  speaker    Speaker @relation(fields: [speakerId], references: [id])
+  session Session @relation(fields: [sessionId], references: [id])
+  speaker Speaker @relation(fields: [speakerId], references: [id])
 
   @@unique([sessionId, speakerId])
+  @@map("SessionSpeaker")
 }
 
 model SpeakerLink {
-  id        String  @id @default(uuid())
-  url       String
+  id  String @id @default(uuid())
+  url String
 
   speakerId String
   speaker   Speaker @relation(fields: [speakerId], references: [id])
+
+  @@map("SpeakerLink")
 }
 
 model Question {
-  id          String   @id @default(uuid())
-  content     String
-  authorName  String?
-  upvotes     Int      @default(0)
-  createdAt   DateTime @default(now())
+  id         String   @id @default(uuid())
+  content    String
+  authorName String?
+  upvotes    Int      @default(0)
+  createdAt  DateTime @default(now())
 
-  sessionId   String
-  session     Session  @relation(fields: [sessionId], references: [id])
+  sessionId String
+  session   Session @relation(fields: [sessionId], references: [id])
+
+  votes QuestionVote[]
+
+  @@map("Question")
 }
 
+model QuestionVote {
+  id         String @id @default(uuid())
+  questionId String
+  visitorId  String
+
+  createdAt DateTime @default(now())
+
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@unique([questionId, visitorId])
+  @@map("QuestionVote")
+}
+
+model Favorite {
+  id String @id @default(uuid())
+
+  visitorId String
+  sessionId String
+
+  createdAt DateTime @default(now())
+
+  session Session @relation(fields: [sessionId], references: [id])
+
+  @@unique([visitorId, sessionId])
+  @@map("Favorite")
+}
