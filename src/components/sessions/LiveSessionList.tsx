@@ -9,7 +9,7 @@ type LiveSession = {
   startTime: string;
   endTime: string;
   room?: { name: string };
-  event?: { title: string };
+  event?: { id: string; title: string };
 };
 
 async function get_live_sessions() {
@@ -50,9 +50,16 @@ export default async function LiveSessionList() {
                   <h3 className="text-xl font-bold text-white truncate">
                     {session.title}
                   </h3>
-                  <p className="text-slate-400 text-sm mt-2 truncate">
-                    {session.event?.title || "Événement inconnu"}
-                  </p>
+                  {session.event ? (
+                    <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-sky-500/20 bg-sky-500/10 px-3 py-1.5 text-sm font-medium text-sky-300 shadow-sm transition hover:border-sky-400/40 hover:bg-sky-500/20">
+                      <span className="text-[0.65rem] uppercase tracking-[0.25em] text-sky-400">Événement</span>
+                      <Link href={`/event/${session.event.id}`} className="truncate hover:text-white">
+                        {session.event.title}
+                      </Link>
+                    </div>
+                  ) : (
+                    <p className="text-slate-400 text-sm mt-2 truncate">Événement inconnu</p>
+                  )}
                 </div>
                 <LiveBadge />
               </div>

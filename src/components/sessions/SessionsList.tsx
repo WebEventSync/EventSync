@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { isSessionLive } from '@/lib/utils';
+import { formatSessionDate, isSessionLive } from '@/lib/utils';
 
 type Room = {
   id: string;
@@ -67,13 +67,7 @@ export default function SessionsList({ sessions, rooms }: Props) {
 
                     <div className="flex items-center gap-3">
                       <div className="text-sm text-slate-400">
-                        {new Date(session.startTime).toLocaleTimeString('fr-FR', {
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })} - {new Date(session.endTime).toLocaleTimeString('fr-FR', {
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
+                        {formatSessionDate(session.startTime, session.endTime)}
                       </div>
 
                       {isLive && (
@@ -98,7 +92,11 @@ export default function SessionsList({ sessions, rooms }: Props) {
                         {session.speakers.map((speakerData: any) => {
                           const speaker = speakerData.speaker;
                           return (
-                            <div key={speaker.id} className="flex gap-3 p-3 bg-slate-700/30 rounded-lg">
+                            <Link
+                              key={speaker.id}
+                              href={`/speaker/${speaker.id}`}
+                              className="flex gap-3 p-3 bg-slate-700/30 rounded-lg transition hover:bg-slate-700/50"
+                            >
                               {speaker.photo && (
                                 <img
                                   src={speaker.photo}
@@ -116,7 +114,7 @@ export default function SessionsList({ sessions, rooms }: Props) {
                                   </p>
                                 )}
                               </div>
-                            </div>
+                            </Link>
                           );
                         })}
                       </div>
