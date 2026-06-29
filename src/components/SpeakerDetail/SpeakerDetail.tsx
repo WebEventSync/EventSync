@@ -1,6 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { formatSessionDate } from '@/lib/utils';
 
 type SpeakerLink = {
   id: string;
@@ -22,14 +24,8 @@ type Session = {
   startTime: string;
   endTime: string;
   room?: { name: string };
+  event?: { id: string; title: string };
 };
-
-function formatSessionTime(startTime: string, endTime: string) {
-  const start = new Date(startTime);
-  const end = new Date(endTime);
-
-  return `${start.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} - ${end.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
-}
 
 function getLinkLabel(url: string) {
   try {
@@ -149,18 +145,41 @@ export default function SpeakerDetail({ speakerId }: { speakerId: string }) {
           {sessions.length ? (
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               {sessions.map((session) => (
-                <div
+                <Link
                   key={session.id}
-                  className="rounded-3xl border border-slate-700/80 bg-slate-900/80 p-6 transition hover:border-sky-500/30"
+                  href={`/sessions/${session.id}`}
+                  className="block rounded-3xl border border-slate-700/80 bg-slate-900/80 p-6 transition hover:border-sky-500/30 hover:bg-slate-800"
                 >
-                  <p className="text-sm uppercase tracking-[0.24em] text-sky-400/80">
-                    {session.room?.name || 'Salle inconnu'}
-                  </p>
-                  <h3 className="mt-4 text-xl font-semibold text-white leading-tight">
-                    {session.title}
-                  </h3>
-                  <p className="mt-4 text-sm text-slate-400">{formatSessionTime(session.startTime, session.endTime)}</p>
-                </div>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-[0.7rem] uppercase tracking-[0.24em] text-sky-400/80">Session</p>
+                      <h3 className="mt-2 text-xl font-semibold text-white leading-tight">
+                        {session.title}
+                      </h3>
+                    </div>
+
+                    <div>
+                      <p className="text-[0.7rem] uppercase tracking-[0.24em] text-sky-400/80">Événement</p>
+                      <p className="mt-2 text-sm text-slate-300">
+                        {session.event?.title || 'Événement non disponible'}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-[0.7rem] uppercase tracking-[0.24em] text-sky-400/80">Salle</p>
+                      <p className="mt-2 text-sm text-slate-300">
+                        {session.room?.name || 'Salle non assignée'}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-[0.7rem] uppercase tracking-[0.24em] text-sky-400/80">Date</p>
+                      <p className="mt-2 text-sm text-slate-400">
+                        {formatSessionDate(session.startTime, session.endTime)}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
               ))}
             </div>
           ) : (

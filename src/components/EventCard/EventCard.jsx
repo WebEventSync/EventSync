@@ -1,15 +1,6 @@
 import Link from 'next/link'
 import styles from './EventCard.module.css'
-
-function formatDateRange(startDate, endDate) {
-  if (!startDate || !endDate) return 'Date inconnue'
-  const start = new Date(startDate)
-  const end = new Date(endDate)
-  const options = { weekday: 'short', day: '2-digit', month: 'short'}
-  const startText = start.toLocaleDateString('fr-FR', options)
-  const endText = end.toLocaleDateString('fr-FR', options)
-  return `${startText} — ${endText}`
-}
+import { formatEventDateRange } from '@/lib/utils'
 
 const CalendarIcon = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true" className={styles.icon}>
@@ -45,7 +36,7 @@ export default function EventCard({ id, title, description, place, startDate, en
 
       <div className={styles.footerDate}>
         <CalendarIcon />
-        <span>{formatDateRange(startDate, endDate)}</span>
+        <span>{formatEventDateRange(startDate, endDate)}</span>
       </div>
 
       <div className={styles.footerPlace}>

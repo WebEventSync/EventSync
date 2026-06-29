@@ -45,6 +45,13 @@ const ERROR_MAP: Record<AppErrorCode, () => NextResponse> = {
   SPEAKER_NOT_FOUND:        () => notFound('Intervenant introuvable'),
   ROOM_HAS_SESSIONS:        () => conflict('Impossible de supprimer : des sessions sont liées à cette salle'),
   SESSION_NEEDS_ONE_SPEAKER: () => conflict('Une session doit avoir au moins un intervenant'),
+  SESSION_START_AFTER_END:  () => badRequest('L’heure de début doit être antérieure à l’heure de fin.'),
+  SESSION_START_EQUALS_END: () => badRequest('La session doit durer au moins un instant.'),
+  SESSION_OUTSIDE_EVENT_BOUNDS: () => badRequest('La session doit se dérouler entre le début et la fin de l’événement.'),
+  SESSION_ROOM_OVERLAP:     () => conflict('La session chevauche une autre session dans cette salle.'),
+  EVENT_START_AFTER_END:    () => badRequest('La date de début doit être antérieure à la date de fin de l’événement.'),
+  EVENT_START_EQUALS_END:   () => badRequest('L’événement doit durer au moins un instant.'),
+  EVENT_NOT_FOUND_FOR_UPDATE: () => notFound('Événement introuvable pour la mise à jour'),
 };
 
 export function handleError(error: unknown): NextResponse {

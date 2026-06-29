@@ -1,19 +1,41 @@
 import { prisma } from "../lib/prisma";
 
-export class questionRepository {
+export class QuestionRepository {
   async get_question(id: string) {
-    return prisma.question.findFirstOrThrow({where: {id}})
+    return prisma.question.findFirstOrThrow({
+      where: { id },
+      include: {
+        session: {
+          include: {
+            event: true,
+          },
+        },
+      },
+    });
   }
+
   async update(id: string, body: any) {
-    return prisma.question.update({where: {id}, data:body})
+    return prisma.question.update({ where: { id }, data: body });
   }
+
   async delete_question(id: string) {
-    return prisma.question.delete(
-      {where: {id}}
-    )
+    return prisma.$transaction(async (tx) => {
+      await tx.questionVote.deleteMany({ where: { questionId: id } });
+      return tx.question.delete({ where: { id } });
+    });
   }
+
   async get_questions() {
-    return prisma.question.findMany()
+    return prisma.question.findMany({
+      include: {
+        session: {
+          include: {
+            event: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
   }
   async findBySession(sessionId: string) {
     return prisma.question.findMany({

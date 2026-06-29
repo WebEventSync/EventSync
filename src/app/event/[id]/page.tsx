@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { formatSessionDate } from '@/lib/utils';
+import { formatEventDateRange } from '@/lib/utils';
 import SessionsList from '@/components/sessions/SessionsList';
 
 const get_event = async (event_id: string) => {
@@ -73,7 +73,7 @@ export default async function Event({ params }: { params: Promise<{ id: string }
                         <svg viewBox="0 0 24 24" className="w-5 h-5 text-sky-400" fill="currentColor">
                             <path d="M6 2a1 1 0 0 0-1 1v1H4a2 2 0 0 0-2 2v2h20V6a2 2 0 0 0-2-2h-1V3a1 1 0 1 0-2 0v1H7V3a1 1 0 0 0-1-1Zm-2 8V8h18v2H4Zm0 3v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7H4Z"/>
                         </svg>
-                        <span>{formatSessionDate(event.startDate, event.endDate)}</span>
+                        <span>{formatEventDateRange(event.startDate, event.endDate)}</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <svg viewBox="0 0 24 24" className="w-5 h-5 text-sky-400" fill="currentColor">

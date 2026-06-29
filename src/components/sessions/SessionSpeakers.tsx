@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function SessionSpeakers({ speakers = [] }: { speakers: any[] }) {
   if (speakers.length === 0) return null;
 
@@ -7,9 +9,12 @@ export default function SessionSpeakers({ speakers = [] }: { speakers: any[] }) 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {speakers.map((item: any) => {
           const speaker = item.speaker || item;
+          const speakerId = speaker?.id ?? item?.speakerId ?? item?.id;
+
           return (
-            <div
-              key={speaker.id}
+            <Link
+              href={`/speaker/${speakerId}`}
+              key={speakerId}
               className="bg-slate-900/70 border border-slate-700/70 rounded-3xl p-6 flex gap-6 hover:border-sky-500/30 transition-colors"
             >
               {speaker.photo && (
@@ -29,7 +34,7 @@ export default function SessionSpeakers({ speakers = [] }: { speakers: any[] }) 
                   </p>
                 )}
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
