@@ -1,4 +1,5 @@
-import EventList from "../components/EventList/EventList"
+import EventList from "../components/EventList/EventList";
+import LiveSessionList from "../components/sessions/LiveSessionList";
 
 async function get_events() {
   const response = await fetch("http://localhost:3000/api/events", {
@@ -14,6 +15,7 @@ export default async function Home() {
   return (
     <main className="min-h-screen p-6 font-sans">
       <EventList events={events} />
+      <LiveSessionList />
     </main>
   )
 }
