@@ -22,11 +22,17 @@ export class RoomRepository {
       where: {
         roomId,
         ...(live
-          ? { startTime: { lte: now }, endTime: { gte: now } }
-          : {}),
+            ? { startTime: { lte: now }, endTime: { gte: now } }
+            : {}),
       },
       include: {
-        speakers: { select: { id: true, speaker: { select: { firstName: true, lastName: true } } } },
+        speakers: {
+          include: {
+            speaker: {
+              select: { id: true, firstName: true, lastName: true }
+            }
+          }
+        },
       },
       orderBy: { startTime: "asc" },
     });

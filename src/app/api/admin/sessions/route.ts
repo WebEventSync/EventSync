@@ -1,61 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SessionRepository } from "@/repository/session.repository";
 import { SessionService } from "@/services/session.service";
-import corsHeaders from "@/app/api/admin/core_header";
+import { ok, handleError } from "@/lib/api-helpers";
 
 const session_service = new SessionService(new SessionRepository());
 
-export async function OPTIONS() {
-  return new Response(null, { status: 204, headers: corsHeaders });
-}
-
-export async function GET(){
+export async function POST(req: NextRequest): Promise<NextResponse> {
     try {
-        const result = await session_service.get_all_sessions()
-        return NextResponse.json(
-            result,
-            {
-            status: 200,
-            headers: {
-                ...corsHeaders,
-                "Content-Range": `events 0-${result.length - 1}/${result.length}`,
-                "Access-Control-Expose-Headers": "Content-Range",
-            },
-        }
-        )
-    }catch (err){
-        return NextResponse.json(
-            { message: err instanceof Error ? err.message : String(err) },
-            { status: 500, headers: corsHeaders }
-        );
+        const body = await req.json();
+        const { eventId, speakersId, ...dto } = body;
+        const session = await session_service.create_session(eventId, dto, speakersId ?? []);
+        return ok(session);
+    } catch (error) {
+        return handleError(error);
     }
 }
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest): Promise<NextResponse> {
     try {
-        const body = await req.json();
-        const { eventId, ...dto } = body;
-
-        if (!eventId) {
-            return NextResponse.json(
-                { error: "Le champ 'eventId' est obligatoire" },
-                { status: 400 , headers: corsHeaders }
-            );
+        const eventId = req.nextUrl.searchParams.get("eventId");
+        let sessions;
+        if (eventId) {
+            sessions = await session_service.get_sessions_by_event(eventId, {});
+        } else {
+            sessions = await session_service.get_all_sessions();
         }
-        if (!dto.title || !dto.startTime || !dto.endTime || !dto.roomId) {
-            return NextResponse.json(
-                { error: "Les champs title, startTime, endTime et roomId sont obligatoires" },
-                { status: 400 , headers: corsHeaders }
-            );
-        }
-
-        const session = await session_service.create_session(eventId, dto);
-        return NextResponse.json(session, { status: 201 , headers: corsHeaders });
+        return ok(sessions);
     } catch (error) {
-        console.error("[POST /api/admin/sessions]", error);
-        return NextResponse.json(
-            { error: error instanceof Error ? error.message : "Erreur interne" },
-            { status: 500 , headers: corsHeaders }
-        );
+        return handleError(error);
     }
 }

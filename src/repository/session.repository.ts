@@ -29,6 +29,13 @@ export class SessionRepository {
     });
   }
 
+  async find_all_sessions() {
+    return prisma.session.findMany({
+      include: SESSION_INCLUDE,
+      orderBy: { startTime: "asc" },
+    });
+  }
+
   async find_session_by_id(id: string) {
     return prisma.session.findUnique({
       where: { id },
@@ -41,8 +48,7 @@ export class SessionRepository {
 
   async create_session(data: Prisma.SessionCreateInput) {
     return prisma.session.create({
-      data,
-      include: SESSION_INCLUDE,
+      data
     });
   }
 
@@ -68,7 +74,7 @@ export class SessionRepository {
   async add_speaker_to_session(sessionId: string, speakerId: string) {
     return prisma.session.update({
       where: { id: sessionId },
-      data: { speakers: { connect: { id: speakerId } } },
+      data: { speakers: { create: { speakerId } } },
       include: SESSION_INCLUDE,
     });
   }
