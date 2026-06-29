@@ -5,15 +5,15 @@ import { QuestionRepository } from "@/repository/question.repository";
 
 const question_service = new QuestionService(new QuestionRepository());
 
-interface Params {
+type RouteContext = {
     params: Promise<{ id: string }>;
-}
+};
 
 export async function OPTIONS() {
   return new Response(null, { status: 204, headers: corsHeaders });
 }
 
-export async function GET({params} : Params){
+export async function GET(_req: NextRequest, { params }: RouteContext){
     try {
         const { id } = await params;
         const session = await question_service.get_question(id);
@@ -26,7 +26,7 @@ export async function GET({params} : Params){
     }
 }
 
-export async function DELETE(_req: NextRequest, { params }: Params)
+export async function DELETE(_req: NextRequest, { params }: RouteContext)
 {
     try {
         const { id } = await params;
@@ -40,7 +40,7 @@ export async function DELETE(_req: NextRequest, { params }: Params)
     }
 }
 
-export async function PUT(_req: NextRequest, { params }: Params){
+export async function PUT(_req: NextRequest, { params }: RouteContext){
     try {
         const { id } = await params;
         const body = await _req.json();

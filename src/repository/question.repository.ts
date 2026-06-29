@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma";
 
-export class questionRepository {
+export class QuestionRepository {
   async get_question(id: string) {
     return prisma.question.findFirstOrThrow({where: {id}})
   }

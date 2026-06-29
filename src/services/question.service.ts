@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma";
-import { questionRepository } from "../repository/question.repository";
+import { QuestionRepository } from "../repository/question.repository";
 
 export class QuestionService {
   async get_question(id: string) {
@@ -8,7 +8,7 @@ export class QuestionService {
   async update_session(id: string, body: any) {
       return await this.question_repository.update(id, body)
   }
-  constructor(private question_repository: questionRepository){}
+  constructor(private question_repository: QuestionRepository){}
   async getBySession(sessionId: string) {
     return await this.question_repository.findBySession(sessionId);
   }
