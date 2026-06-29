@@ -38,6 +38,28 @@ export class SessionService {
     return session;
   }
 
+async get_live_sessions() {
+    const now = new Date();
+    return prisma.session.findMany({
+        where: {
+            startTime: { lte: now },
+            endTime: { gte: now },
+        },
+        include: {
+            room: { select: { id: true, name: true } },
+            speakers: {
+                include: {
+                    speaker: {
+                        select: { id: true, firstName: true, lastName: true, photo: true }
+                    }
+                }
+            },
+            event: { select: { id: true, title: true } },
+        },
+        orderBy: { startTime: "asc" },
+    });
+}
+
   // ADMIN
 
   async create_session(eventId: string, dto: CreateSessionDto, speakersId: string[] = []) {
