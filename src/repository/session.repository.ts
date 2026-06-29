@@ -80,4 +80,14 @@ export class SessionRepository {
       include: SESSION_INCLUDE,
     });
   }
+
+  async get_live_sessions(){
+    return prisma.session.findMany({
+      where : {startTime: {
+        lt : new Date()
+      }, endTime : {
+        gt : new Date()
+      }},include: SESSION_INCLUDE
+    })
+  }
 }
