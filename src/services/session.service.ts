@@ -10,21 +10,6 @@ export class SessionService {
   private async assert_event_exists(eventId: string) {
     const event = await prisma.event.findUnique({ where: { id: eventId } });
     if (!event) throw new AppError("EVENT_NOT_FOUND");
-    return event;
-  }
-
-  private assert_session_dates(startTime: Date, endTime: Date, eventStart: Date, eventEnd: Date) {
-    if (startTime >= endTime) {
-      throw new AppError(
-        startTime.getTime() === endTime.getTime()
-          ? "SESSION_START_EQUALS_END"
-          : "SESSION_START_AFTER_END"
-      );
-    }
-
-    if (startTime < eventStart || endTime > eventEnd) {
-      throw new AppError("SESSION_OUTSIDE_EVENT_BOUNDS");
-    }
   }
 
   private async assert_room_exists(roomId: string) {
@@ -78,20 +63,16 @@ async get_live_sessions() {
   // ADMIN
 
   async create_session(eventId: string, dto: CreateSessionDto, speakersId: string[] = []) {
-    const event = await this.assert_event_exists(eventId);
+    await this.assert_event_exists(eventId);
     await this.assert_room_exists(dto.roomId);
-
-    const startTime = new Date(dto.startTime);
-    const endTime = new Date(dto.endTime);
-    this.assert_session_dates(startTime, endTime, event.startDate, event.endDate);
 
     const allSpeakerIds = speakersId.length ? speakersId : (dto.speakerIds ?? []);
 
     return this.session_repository.create_session({
       title: dto.title,
       description: dto.description ?? "",
-      startTime,
-      endTime,
+      startTime: new Date(dto.startTime),
+      endTime: new Date(dto.endTime),
       room: { connect: { id: dto.roomId } },
       event: { connect: { id: eventId } },
       ...(allSpeakerIds.length
@@ -110,6 +91,12 @@ async get_live_sessions() {
 
     if (dto.roomId) await this.assert_room_exists(dto.roomId);
 
+    if (dto.speakerIds) {
+      for (const speakerId of dto.speakerIds) {
+        await this.assert_speaker_exists(speakerId);
+      }
+    }
+
     return this.session_repository.update_session(id, {
       ...(dto.title ? { title: dto.title } : {}),
       ...(dto.description !== undefined ? { description: dto.description } : {}),
@@ -117,6 +104,14 @@ async get_live_sessions() {
       ...(dto.endTime ? { endTime: new Date(dto.endTime) } : {}),
       ...(dto.capacity !== undefined ? { capacity: dto.capacity } : {}),
       ...(dto.roomId ? { room: { connect: { id: dto.roomId } } } : {}),
+      ...(dto.speakerIds
+        ? {
+            speakers: {
+              deleteMany: {},
+              create: dto.speakerIds.map((speakerId) => ({ speakerId })),
+            },
+          }
+        : {}),
     });
   }
 
